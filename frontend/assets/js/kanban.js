@@ -37,7 +37,7 @@ async function initKanban() {
     addExportButton();
     setupNewLeadModal();
     setupImportModal();
-    setupMobileMenu();
+
     setupLogout();
 }
 
@@ -194,30 +194,7 @@ async function processImportBatch(leadsToImport) {
 }
 
 
-function setupMobileMenu() {
-    const btn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.querySelector('aside');
 
-    if (!btn || !sidebar) return;
-
-    btn.addEventListener('click', () => {
-        sidebar.classList.toggle('hidden');
-        sidebar.classList.toggle('flex'); // Force flex display when toggled
-    });
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', (e) => {
-        if (!sidebar.contains(e.target) && !btn.contains(e.target) && !sidebar.classList.contains('hidden')) {
-            // Only if we are in mobile view (md:flex is usually usually handled by media query, 
-            // but here we toggle classes. We should carefully toggle back).
-            // Simplest is to just add hidden again if it's currently showing and screen is small
-            if (window.innerWidth < 768) {
-                sidebar.classList.add('hidden');
-                sidebar.classList.remove('flex');
-            }
-        }
-    });
-}
 
 function setupLogout() {
     const btns = [document.getElementById('logoutBtn'), document.getElementById('logoutBtnMain')];
