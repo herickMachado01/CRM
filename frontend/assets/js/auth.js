@@ -65,6 +65,28 @@ export async function signUp(email, password) {
     }
 }
 
+export async function recoverPassword(email) {
+    ui.setLoading('recoverSubmitBtn', true);
+
+    try {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/reset-password.html', // Ensure this page exists or points to a valid handler
+        });
+
+        if (error) throw error;
+
+        ui.showToast('Email de recuperação enviado!', 'success');
+        return { error: null };
+
+    } catch (error) {
+        console.error('Recover Password error:', error);
+        ui.showToast(error.message || 'Erro ao enviar email', 'error');
+        return { error };
+    } finally {
+        ui.setLoading('recoverSubmitBtn', false);
+    }
+}
+
 export async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
 

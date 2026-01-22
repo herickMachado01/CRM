@@ -79,7 +79,8 @@
                     <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                     <span class="ml-2">Lembrar de mim</span>
                 </label>
-                <a href="#" class="font-medium text-brand-600 hover:text-brand-500">Esqueceu a senha?</a>
+                <a href="#" id="forgotPasswordBtn" class="font-medium text-brand-600 hover:text-brand-500">Esqueceu a
+                    senha?</a>
             </div>
 
             <button type="submit" id="submitBtn"
@@ -93,12 +94,47 @@
 
         <p class="mt-6 text-center text-sm text-gray-500">
             Não tem uma conta?
-            <a href="signup.html" class="font-medium text-brand-600 hover:text-brand-500">Criar conta</a>
+            <a href="reset-password.html" class="font-medium text-brand-600 hover:text-brand-500">Criar conta</a>
         </p>
     </div>
 
     <!-- UI Feedback Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- Password Recovery Modal -->
+    <div id="recoverModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm hidden transition-all duration-300">
+        <div
+            class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-[90%] mx-4 transform transition-all opacity-0 scale-95 duration-300">
+            <div class="mb-5">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Recuperar Senha</h3>
+                <p class="text-gray-500 text-sm">Digite seu email para receber as instruções de recuperação.</p>
+            </div>
+
+            <form id="recoverForm" class="space-y-4">
+                <div>
+                    <label for="recoverEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="recoverEmail" required
+                        class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors bg-gray-50 focus:bg-white outline-none"
+                        placeholder="seu@email.com">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeRecoverModal()"
+                        class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="recoverSubmitBtn"
+                        class="flex-1 flex justify-center items-center px-4 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm active:scale-95">
+                        <span>Recuperar</span>
+                        <div id="loader"
+                            class="hidden ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Welcome Popup -->
     <div id="welcomePopup"
@@ -115,9 +151,12 @@
                 <h2 class="text-xl font-bold text-gray-900 mb-2">Muito Obrigado !</h2>
                 <p class="text-gray-600 text-sm">
                     Após a gravação do vídeo, realizei algumas melhorias no sistema.
-                    Implementei a funcionalidade de exclusão de leads, caso seja necessário, e finalizei o histórico de interações, que agora está funcionando corretamente.
+                    Implementei a funcionalidade de exclusão de leads, caso seja necessário, e finalizei o histórico de
+                    interações, que agora está funcionando corretamente.
 
-                    Reforço que, para um ambiente de produção, o design e a segurança poderiam ser ainda mais aprimorados. No entanto, considerando a proposta de um sistema rápido e funcional, acredito que o resultado final atende bem aos objetivos.
+                    Reforço que, para um ambiente de produção, o design e a segurança poderiam ser ainda mais
+                    aprimorados. No entanto, considerando a proposta de um sistema rápido e funcional, acredito que o
+                    resultado final atende bem aos objetivos.
 
                     Caso queira entrar em contato comigo, basta clicar no botão do WhatsApp disponível no site.
 
@@ -192,6 +231,41 @@
             const password = document.getElementById('password').value;
             await login(email, password);
         });
+
+        // --- Password Recovery Logic ---
+        import { recoverPassword } from './assets/js/auth.js';
+
+        const forgotBtn = document.getElementById('forgotPasswordBtn');
+        const recoverModal = document.getElementById('recoverModal');
+        const recoverForm = document.getElementById('recoverForm');
+
+        if (forgotBtn) {
+            forgotBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                recoverModal.classList.remove('hidden');
+                setTimeout(() => {
+                    recoverModal.firstElementChild.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            });
+        }
+
+        window.closeRecoverModal = function () {
+            recoverModal.firstElementChild.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                recoverModal.classList.add('hidden');
+            }, 300);
+        }
+
+        if (recoverForm) {
+            recoverForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('recoverEmail').value;
+                const result = await recoverPassword(email);
+                if (!result.error) {
+                    closeRecoverModal();
+                }
+            });
+        }
     </script>
 </body>
 
