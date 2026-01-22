@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Mini CRM</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body class="bg-gray-50 text-slate-900 antialiased h-screen flex items-center justify-center overflow-hidden">
+
+    <div
+        class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100 transform transition-all hover:scale-[1.005] duration-500">
+        <div class="mb-8 text-center">
+            <div
+                class="w-12 h-12 bg-brand-600 rounded-xl mx-auto flex items-center justify-center shadow-lg shadow-brand-500/30 mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Bem-vindo de volta</h1>
+            <p class="text-sm text-gray-500 mt-2">Entre para gerenciar seus leads</p>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="email" required
+                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors bg-gray-50 focus:bg-white outline-none"
+                    placeholder="seu@email.com">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                <input type="password" id="password" required
+                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors bg-gray-50 focus:bg-white outline-none"
+                    placeholder="••••••••">
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center text-gray-500 cursor-pointer">
+                    <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                    <span class="ml-2">Lembrar de mim</span>
+                </label>
+                <a href="#" class="font-medium text-brand-600 hover:text-brand-500">Esqueceu a senha?</a>
+            </div>
+
+            <button type="submit" id="submitBtn"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all transform active:scale-95">
+                <span>Entrar</span>
+                <div id="loader"
+                    class="hidden ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
+                </div>
+            </button>
+        </form>
+
+        <p class="mt-6 text-center text-sm text-gray-500">
+            Não tem uma conta?
+            <a href="signup.html" class="font-medium text-brand-600 hover:text-brand-500">Criar conta</a>
+        </p>
+    </div>
+
+    <!-- UI Feedback Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- Welcome Popup -->
+    <div id="welcomePopup"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-[90%] mx-4 transform transition-all scale-95 duration-300"
+            id="welcomeContent">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 20.16C10.57 20.16 9.12 19.77 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.71 20.28 11.91C20.28 16.46 16.58 20.16 12.05 20.16ZM16.61 14.99C16.36 14.86 15.14 14.26 14.91 14.18C14.68 14.1 14.51 14.06 14.34 14.29C14.17 14.54 13.69 15.1 13.52 15.27C13.35 15.44 13.18 15.46 12.93 15.33C12.68 15.21 11.87 14.95 10.92 14.1C10.17 13.43 9.67 12.6 9.42 12.18C9.17 11.77 9.39 11.55 9.52 11.42C9.63 11.31 9.77 11.14 9.89 11C10.01 10.86 10.05 10.76 10.13 10.6C10.21 10.43 10.17 10.29 10.11 10.16C10.05 10.04 9.56 8.84 9.35 8.35C9.15 7.87 8.95 7.94 8.79 7.94C8.64 7.94 8.47 7.93 8.3 7.93C8.13 7.93 7.85 8 7.61 8.26C7.37 8.52 6.69 9.16 6.69 10.46C6.69 11.76 7.64 13.02 7.78 13.21C7.92 13.4 9.75 16.27 12.55 17.43C14.86 18.39 15.34 18.2 15.84 18.12C16.59 18 17.8 17.34 18.05 16.62C18.3 15.9 18.3 15.28 18.23 15.16C18.15 15.04 17.98 14.99 17.73 14.86L16.61 14.99Z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Muito Obrigado !</h2>
+                <p class="text-gray-600 text-sm">
+                    Após a gravação do vídeo, realizei algumas melhorias no sistema.
+                    Implementei a funcionalidade de exclusão de leads, caso seja necessário, e finalizei o histórico de interações, que agora está funcionando corretamente.
+
+                    Reforço que, para um ambiente de produção, o design e a segurança poderiam ser ainda mais aprimorados. No entanto, considerando a proposta de um sistema rápido e funcional, acredito que o resultado final atende bem aos objetivos.
+
+                    Caso queira entrar em contato comigo, basta clicar no botão do WhatsApp disponível no site.
+
+                    Agradeço pelo seu tempo e desejo um ótimo dia.
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                <a href="https://wa.me/5515997237164" target="_blank" onclick="closeWelcomePopup()"
+                    class="w-full flex items-center justify-center px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-green-200">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z" />
+                    </svg>
+                    Entrar em contato
+                </a>
+                <button onclick="closeWelcomePopup()"
+                    class="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dependencies -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <!-- App Scripts -->
+    <script type="module" src="assets/js/supabase.js"></script>
+    <script type="module" src="assets/js/ui.js"></script>
+    <script type="module" src="assets/js/auth.js"></script>
+
+    <script type="module">
+        import { login } from './assets/js/auth.js';
+
+        // Welcome Popup Logic
+        const popup = document.getElementById('welcomePopup');
+        const content = document.getElementById('welcomeContent');
+
+        function showWelcomePopup() {
+            // Check if already shown
+            if (!localStorage.getItem('minicrm_welcome_shown')) {
+                popup.classList.remove('hidden');
+                // Small delay for interaction
+                setTimeout(() => {
+                    popup.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }, 100);
+            }
+        }
+
+        window.closeWelcomePopup = function () {
+            popup.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 300);
+
+            // Mark as shown
+            localStorage.setItem('minicrm_welcome_shown', 'true');
+        }
+
+        // Initialize
+        showWelcomePopup();
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            await login(email, password);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline | Mini CRM</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- SheetJS for Excel import -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <!-- Drag Drop Touch Polyfill for Mobile Support -->
+    <script src="https://bernardo-castilho.github.io/DragDropTouch/DragDropTouch.js"></script>
+</head>
+
+<body class="bg-gray-50 text-slate-900 antialiased h-screen overflow-hidden">
+
+    <!-- Components Injected Here (handled by JS later normally, but for now we might include them server side or fetch them)
+         Since we are pure HTML/JS, we can use fetch to load components. -->
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div id="modal-container"></div>
+
+    <main
+        class="md:ml-64 h-[calc(100vh-64px)] overflow-y-auto md:overflow-y-hidden overflow-x-hidden md:overflow-x-auto p-6 bg-gray-50/50">
+
+        <!-- Toolbar -->
+        <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 min-w-full md:min-w-[800px]">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
+                <div class="relative w-full sm:w-64">
+                    <input type="text" placeholder="Buscar leads..."
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-brand-500 focus:border-brand-500 bg-white w-full shadow-sm">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <button id="filterBtn"
+                    class="w-full sm:w-auto px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm flex items-center justify-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filtros
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <button id="importLeadBtn"
+                    class="w-full md:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm flex items-center justify-center transition-all active:scale-95">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Importar Leads
+                </button>
+                <button id="newLeadBtn"
+                    class="w-full md:w-auto px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 shadow-sm flex items-center justify-center transition-all active:scale-95">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Novo Lead
+                </button>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="flex flex-col md:flex-row gap-6 h-auto md:h-full md:min-w-[1000px] pb-4">
+
+            <!-- Column: Novo -->
+            <div
+                class="flex-shrink-0 w-full md:w-80 flex flex-col h-auto md:h-full rounded-xl bg-gray-100/50 border border-gray-200">
+                <div
+                    class="p-3 font-semibold text-gray-700 flex items-center justify-between border-b border-gray-200 bg-gray-50 rounded-t-xl sticky top-0 z-10">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+                        Novo
+                        <span class="ml-2 bg-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded-full"
+                            id="count-novo">0</span>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3 space-y-3 kanban-column min-h-[150px]" id="col-novo"
+                    data-status="novo">
+                    <!-- Cards will be injected here -->
+                </div>
+            </div>
+
+            <!-- Column: Contato -->
+            <div
+                class="flex-shrink-0 w-full md:w-80 flex flex-col h-auto md:h-full rounded-xl bg-gray-100/50 border border-gray-200">
+                <div
+                    class="p-3 font-semibold text-gray-700 flex items-center justify-between border-b border-gray-200 bg-gray-50 rounded-t-xl sticky top-0 z-10">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
+                        Contato
+                        <span class="ml-2 bg-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded-full"
+                            id="count-contato">0</span>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3 space-y-3 kanban-column min-h-[150px]" id="col-contato"
+                    data-status="contato">
+                </div>
+            </div>
+
+            <!-- Column: Proposta -->
+            <div
+                class="flex-shrink-0 w-full md:w-80 flex flex-col h-auto md:h-full rounded-xl bg-gray-100/50 border border-gray-200">
+                <div
+                    class="p-3 font-semibold text-gray-700 flex items-center justify-between border-b border-gray-200 bg-gray-50 rounded-t-xl sticky top-0 z-10">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
+                        Proposta
+                        <span class="ml-2 bg-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded-full"
+                            id="count-proposta">0</span>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3 space-y-3 kanban-column min-h-[150px]" id="col-proposta"
+                    data-status="proposta"></div>
+            </div>
+
+            <!-- Column: Fechado -->
+            <div
+                class="flex-shrink-0 w-full md:w-80 flex flex-col h-auto md:h-full rounded-xl bg-gray-100/50 border border-gray-200">
+                <div
+                    class="p-3 font-semibold text-gray-700 flex items-center justify-between border-b border-gray-200 bg-gray-50 rounded-t-xl sticky top-0 z-10">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                        Fechado
+                        <span class="ml-2 bg-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded-full"
+                            id="count-fechado">0</span>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3 space-y-3 kanban-column min-h-[150px]" id="col-fechado"
+                    data-status="fechado">
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- UI Feedback Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module">
+        // Helper to load components
+        async function loadComponent(id, file) {
+            const resp = await fetch(file);
+            const html = await resp.text();
+            document.getElementById(id).innerHTML = html;
+        }
+
+        Promise.all([
+            loadComponent('sidebar-container', 'components/sidebar.html?v=' + Date.now()),
+            loadComponent('header-container', 'components/header.html?v=' + Date.now()),
+            loadComponent('modal-container', 'components/modal.html?v=' + Date.now())
+        ]).then(() => {
+            // Initialize interactions after components load
+            import('./assets/js/kanban.js');
+            import('./assets/js/ui.js').then(module => {
+                module.ui.initMobileMenu();
+            });
+        });
+    </script>
+</body>
+
+</html>

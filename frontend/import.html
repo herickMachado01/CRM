@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Leads | Mini CRM</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- SheetJS for parsing logic -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body class="bg-gray-50 text-slate-900 antialiased h-screen overflow-hidden">
+
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div id="modal-container"></div>
+
+    <main class="md:ml-64 h-[calc(100vh-64px)] overflow-y-auto p-6">
+        <div class="max-w-2xl mx-auto mt-10">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Importar Leads</h1>
+            <p class="text-gray-500 mb-8">Carregue um arquivo .csv ou .xlsx para importar leads em massa.</p>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center" id="drop-zone">
+                <div
+                    class="w-16 h-16 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                </div>
+
+                <h3 class="text-lg font-medium text-gray-900">Arraste e solte seu arquivo aqui</h3>
+                <p class="text-gray-500 mt-2 text-sm">Suporta CSV e Excel (XLSX)</p>
+
+                <div class="mt-6">
+                    <label for="file-upload"
+                        class="cursor-pointer bg-brand-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-brand-700 transition-colors inline-block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                        Selecionar Arquivo
+                    </label>
+                    <input id="file-upload" type="file" class="hidden" accept=".csv, .xlsx, .xls">
+                </div>
+            </div>
+
+            <div id="preview-area" class="mt-8 hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Pré-visualização (<span id="preview-count">0</span>
+                        leads)</h3>
+                    <button id="confirm-import-btn"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                        Confirmar Importação
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nome</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Email</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Empresa</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="preview-table-body">
+                                <!-- Data rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="assets/js/import.js"></script>
+    <script>
+        // Helper to load components
+        async function loadComponent(id, file) {
+            const resp = await fetch(file);
+            const html = await resp.text();
+            document.getElementById(id).innerHTML = html;
+        }
+
+        Promise.all([
+            loadComponent('sidebar-container', 'components/sidebar.html'),
+            loadComponent('header-container', 'components/header.html'),
+            loadComponent('modal-container', 'components/modal.html')
+        ]).then(() => {
+            import('./assets/js/ui.js').then(module => {
+                module.ui.initMobileMenu();
+            });
+        });
+    </script>
+</body>
+
+</html>

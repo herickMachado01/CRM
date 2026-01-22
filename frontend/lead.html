@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Lead | Mini CRM</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body class="bg-gray-50 text-slate-900 antialiased h-screen overflow-hidden">
+
+    <div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div id="modal-container"></div>
+
+    <main class="md:ml-64 h-[calc(100vh-64px)] overflow-y-auto p-6">
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Breadcrumb -->
+            <nav class="flex mb-6" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="dashboard.html"
+                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-brand-600">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                                </path>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Detalhes</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Lead Header -->
+            <div class="bg-white shadow rounded-lg mb-6 p-6 border border-gray-100 flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-1" id="lead-name">Carregando...</h1>
+                    <p class="text-sm text-gray-500" id="lead-company">...</p>
+                    <div class="mt-4 flex flex-wrap gap-2" id="lead-tags">
+                        <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold"
+                            id="lead-status">...</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                        Editar
+                    </button>
+                    <button id="addInteractionBtn"
+                        class="px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                        Nova Interação
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Info Column -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white shadow rounded-lg p-6 border border-gray-100">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Informações</h3>
+                        <dl class="space-y-4">
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase">Email</dt>
+                                <dd class="mt-1 text-sm text-gray-900 truncate" id="lead-email">-</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase">Telefone</dt>
+                                <dd class="mt-1 text-sm text-gray-900" id="lead-phone">-</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase">Origem</dt>
+                                <dd class="mt-1 text-sm text-gray-900" id="lead-source">-</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-medium text-gray-500 uppercase">Criado em</dt>
+                                <dd class="mt-1 text-sm text-gray-900" id="lead-date">-</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <div class="bg-white shadow rounded-lg p-6 border border-gray-100">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Notas</h3>
+                        <p class="text-sm text-gray-600 whitespace-pre-line" id="lead-notes">Nenhuma nota.</p>
+                    </div>
+                </div>
+
+                <!-- Timeline Column -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white shadow rounded-lg border border-gray-100 min-h-[500px]">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900">Histórico de Interações</h3>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-6" id="interactions-list">
+                                <!-- Interactions injected here -->
+                                <li class="text-center text-gray-500 py-4">Carregando histórico...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import { getLeadById, updateLead, addInteraction } from './assets/js/leads.js';
+
+        // Helper to load components
+        async function loadComponent(id, file) {
+            const resp = await fetch(file);
+            const html = await resp.text();
+            document.getElementById(id).innerHTML = html;
+        }
+
+        Promise.all([
+            loadComponent('sidebar-container', 'components/sidebar.html'),
+            loadComponent('header-container', 'components/header.html'),
+            loadComponent('modal-container', 'components/modal.html')
+        ]).then(() => {
+            loadLeadDetails();
+        });
+
+        async function loadLeadDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) {
+                alert('ID inválido');
+                return;
+            }
+
+            const { data, error } = await getLeadById(id);
+
+            if (error || !data) {
+                console.error(error);
+                alert('Erro ao carregar lead');
+                return;
+            }
+
+            // Render Basic Data
+            document.getElementById('lead-name').textContent = data.name;
+            document.getElementById('lead-company').textContent = data.company || '-';
+            document.getElementById('lead-status').textContent = data.status.toUpperCase();
+            document.getElementById('lead-email').textContent = data.email || '-';
+            document.getElementById('lead-phone').textContent = data.phone || '-';
+            document.getElementById('lead-source').textContent = data.source || '-';
+            document.getElementById('lead-date').textContent = new Date(data.created_at).toLocaleDateString();
+            document.getElementById('lead-notes').textContent = data.notes || 'Nenhuma nota.';
+
+            setupEditButton(data);
+            setupAddInteractionButton(data);
+
+            // Mock interactions render (real impl would fetch from leads.js)
+            renderInteractions(data.interactions || []); // If we fetched with join
+        }
+
+        function setupAddInteractionButton(lead) {
+            const btn = document.getElementById('addInteractionBtn');
+            if (btn) {
+                btn.onclick = () => openAddInteractionModal(lead);
+            }
+        }
+
+        function openAddInteractionModal(lead) {
+            const content = `
+                <form id="interactionForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tipo</label>
+                        <select id="interactionType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2">
+                            <option value="call">Ligação</option>
+                            <option value="email">Email</option>
+                            <option value="meeting">Reunião</option>
+                            <option value="note">Nota</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Descrição</label>
+                        <textarea id="interactionDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2" placeholder="Descreva a interação..."></textarea>
+                    </div>
+                </form>
+            `;
+
+            window.openModal('Nova Interação', content, async () => {
+                const type = document.getElementById('interactionType').value;
+                const description = document.getElementById('interactionDescription').value;
+
+                if (!description) {
+                    alert('Por favor, adicione uma descrição.');
+                    throw new Error('Descrição obrigatória'); // Prevent modal close logic if we had deeper integration, but here simple alert
+                }
+
+                await addInteraction(lead.id, type, description);
+                window.location.reload();
+            });
+        }
+
+        function setupEditButton(lead) {
+            const btn = document.querySelector('button.text-gray-700'); // Targeted the "Editar" button by class/text
+            // Better to give ID, but standard template has specific classes. 
+            // We can also assume it's the first button in that container or add ID in HTML step if needed.
+            // Let's add ID via JS or assume it's the one with text "Editar"
+            if (btn && btn.innerText.includes('Editar')) {
+                btn.onclick = () => openEditModal(lead);
+            }
+        }
+
+        function openEditModal(lead) {
+            const content = `
+                <form id="editLeadForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nome</label>
+                        <input type="text" id="editName" value="${lead.name || ''}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2">
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-gray-700">Empresa</label>
+                        <input type="text" id="editCompany" value="${lead.company || ''}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="editEmail" value="${lead.email || ''}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                        <input type="text" id="editPhone" value="${lead.phone || ''}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Notas</label>
+                        <textarea id="editNotes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm border p-2">${lead.notes || ''}</textarea>
+                    </div>
+                </form>
+            `;
+
+            if (window.openModal) {
+                window.openModal('Editar Lead', content, async () => {
+                    const newValues = {
+                        name: document.getElementById('editName').value,
+                        company: document.getElementById('editCompany').value,
+                        email: document.getElementById('editEmail').value,
+                        phone: document.getElementById('editPhone').value,
+                        notes: document.getElementById('editNotes').value
+                    };
+
+                    const updates = {};
+                    let hasChanges = false;
+
+                    // Compare & build updates
+                    if (newValues.name !== (lead.name || '')) { updates.name = newValues.name; hasChanges = true; }
+                    if (newValues.company !== (lead.company || '')) { updates.company = newValues.company; hasChanges = true; }
+                    if (newValues.email !== (lead.email || '')) { updates.email = newValues.email; hasChanges = true; }
+                    if (newValues.phone !== (lead.phone || '')) { updates.phone = newValues.phone; hasChanges = true; }
+                    if (newValues.notes !== (lead.notes || '')) { updates.notes = newValues.notes; hasChanges = true; }
+
+                    if (!hasChanges) {
+                        alert('Nenhuma alteração detectada.');
+                        return; // Stop execution, modal stays open or we can close it. 
+                        // Since `openModal` wrapper doesn't handle return values to close/keep open easily without throwing,
+                        // we might let it close effectively or throw to keep open if we implemented that.
+                        // But original code: await onConfirm(). 
+                        // If we return, it finishes awaiting and closes. That's fine for "No changes".
+                    }
+
+                    const { error } = await updateLead(lead.id, updates);
+                    if (!error) {
+                        window.location.reload();
+                    }
+                });
+            } else {
+                // Fallback if modal not loaded yet (should be)
+                alert("Modal system not ready");
+            }
+        }
+
+        // Global exposing for modal logic (from ui.js/kanban.js... wait, modal logic is in kanban.js ?)
+        // Uh oh, openModal is defined in kanban.js which is NOT imported here.
+        // We need to import the modal logic or duplicate it.
+        // Let's import the modal logic from ui.js if it was there? 
+        // No, in kanban.js it was defined. We should move generic modal logic to `ui.js` or a `modal.js` util.
+        // For now, I will RE-IMPLEMENT a simple openModal wrapper or copy it, 
+        // to avoid refactoring the whole modal system right now which might break kanban.
+
+        // Let's implement a local openModal that uses the same DOM structure as kanban.js
+        window.openModal = function (title, content, onConfirm) {
+            const overlay = document.getElementById('modalOverlay');
+            if (!overlay) return;
+
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerHTML = content;
+
+            // Re-create footer buttons to attach new listener
+            const footer = document.getElementById('modalFooter');
+            footer.innerHTML = `
+                <button type="button" id="modalConfirmBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-brand-600 text-base font-medium text-white hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Salvar
+                </button>
+                <button type="button" onclick="document.getElementById('modalOverlay').classList.add('hidden')" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancelar
+                </button>
+            `;
+
+            document.getElementById('modalConfirmBtn').onclick = async () => {
+                // simple loading state
+                const btn = document.getElementById('modalConfirmBtn');
+                const originalText = btn.innerText;
+                btn.innerText = "Salvando...";
+                btn.disabled = true;
+                await onConfirm();
+                // If invalid or error, we might want to revert, but here we reload on success.
+                btn.innerText = originalText;
+                btn.disabled = false;
+            };
+
+            overlay.classList.remove('hidden');
+            overlay.classList.remove('opacity-0');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.classList.remove('opacity-0', 'translate-y-4', 'sm:translate-y-0', 'sm:scale-95');
+        };
+
+
+        function renderInteractions(interactions) {
+            const list = document.getElementById('interactions-list');
+            list.innerHTML = '';
+
+            // Sort by date desc (newest first) if not already
+            interactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            if (interactions.length === 0) {
+                list.innerHTML = '<li class="text-center text-gray-500 py-4">Nenhuma interação registrada.</li>';
+                return;
+            }
+
+            interactions.forEach(interaction => {
+                const date = new Date(interaction.created_at).toLocaleString('pt-BR');
+                let icon = '';
+                let colorClass = '';
+
+                // Customize visuals based on type
+                switch (interaction.type) {
+                    case 'create':
+                        icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />';
+                        colorClass = 'bg-blue-100 text-blue-600';
+                        break;
+                    case 'status':
+                        icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />';
+                        colorClass = 'bg-yellow-100 text-yellow-600';
+                        break;
+                    case 'edit':
+                        icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />';
+                        colorClass = 'bg-gray-100 text-gray-600';
+                        break;
+                    default: // note, etc
+                        icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />';
+                        colorClass = 'bg-gray-100 text-gray-500';
+                }
+
+                const html = `
+                    <li class="flex space-x-3">
+                        <div class="flex-shrink-0">
+                            <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${colorClass}">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    ${icon}
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                            <div>
+                                <p class="text-sm text-gray-500">${interaction.description} <span class="font-medium text-gray-900"></span></p>
+                            </div>
+                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                                <time datetime="${interaction.created_at}">${date}</time>
+                            </div>
+                        </div>
+                    </li>
+                `;
+                list.insertAdjacentHTML('beforeend', html);
+            });
+        }
+    </script>
+</body>
+
+</html>

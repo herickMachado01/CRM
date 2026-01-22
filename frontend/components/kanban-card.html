@@ -1,0 +1,32 @@
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow group"
+    draggable="true" data-id="{{id}}" data-status="{{status}}">
+    <div class="flex justify-between items-start mb-2">
+        <h4 class="text-sm font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">{{name}}</h4>
+        <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+            data-action="options">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+        </button>
+    </div>
+
+    <p class="text-xs text-gray-500 mb-3 truncate">{{company}}</p>
+
+    <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+        <div class="flex items-center text-xs text-gray-400">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {{date}}
+        </div>
+
+        <div class="flex space-x-2">
+            <a href="lead.html?id={{id}}"
+                class="text-xs font-medium text-brand-600 hover:text-brand-700 bg-brand-50 px-2 py-1 rounded">
+                Ver
+            </a>
+        </div>
+    </div>
+</div>
